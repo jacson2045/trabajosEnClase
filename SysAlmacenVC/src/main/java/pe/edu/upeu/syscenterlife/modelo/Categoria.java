@@ -24,7 +24,7 @@ public class Categoria {
     @Column(name = "id_categoria")
     private Integer idCategoria;
     @Basic(optional = false)
-    @Column(name = "nombre")
+    @Column(name = "nombres")
     private String nombre;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_categoria", referencedColumnName = "id_categoria")
