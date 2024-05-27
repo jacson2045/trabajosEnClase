@@ -18,7 +18,6 @@ import lombok.Data;
 @Data
 @Entity
 public class Producto {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -42,19 +41,22 @@ public class Producto {
     @Basic(optional = false)
     @Column(name = "stockold")
     private double stockold;
+    
     @JoinColumn(name = "id_categoria", referencedColumnName = "id_categoria")
     @ManyToOne(optional = false)
     @JsonIgnoreProperties({"productos"})
     private Categoria idCategoria;
+    
     @JoinColumn(name = "id_marca", referencedColumnName = "id_marca")
     @ManyToOne(optional = false)
     @JsonIgnoreProperties({"productos"})
     private Marca idMarca;
+    
     @JoinColumn(name = "id_unidad", referencedColumnName = "id_unidad")
     @ManyToOne(optional = false)
     @JsonIgnoreProperties({"productos"})
     private UnidMedida idUnidad;
-
+    
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_producto", referencedColumnName = "id_producto")
     @JsonIgnoreProperties({"idProducto"})
@@ -63,5 +65,5 @@ public class Producto {
     @JoinColumn(name = "id_producto", referencedColumnName = "id_producto")
     @JsonIgnoreProperties({"idProducto"})
     public List<VentaDetalle> ventaDetalles;
-
+    
 }

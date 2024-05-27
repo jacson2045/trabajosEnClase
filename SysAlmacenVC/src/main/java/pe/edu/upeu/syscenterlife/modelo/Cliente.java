@@ -19,14 +19,13 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 public class Cliente {
-
-    @Id
-    String dniruc;
-    String nombrers;
-    String documento;
+   @Id 
+   String dniruc;
+   String nombrers;
+   String documento;
+   
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "dniruc", referencedColumnName = "dniruc")
     @JsonIgnoreProperties({"dniruc"})
     public List<Venta> ventas;
-
 }

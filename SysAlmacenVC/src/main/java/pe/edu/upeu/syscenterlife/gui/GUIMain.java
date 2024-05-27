@@ -142,7 +142,7 @@ public class GUIMain extends JFrame {
         public void actionPerformed(ActionEvent e) {
             System.out.println("pasa por aqui");
             Container contai = GUIMain.this.getContentPane();
-            
+
             if (((JMenuItem) e.getSource()).getName()
                     .equals("micliente")) {
                 System.out.println("Holas si llega");
@@ -153,9 +153,9 @@ public class GUIMain extends JFrame {
                 mc.setPreferredSize(new Dimension(1024, 600));
                 scrollPane = new JScrollPane(mc);
                 scrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 scrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
                 jtpane.add(scrollPane, "Cliente");
                 contai.add(BorderLayout.CENTER, jtpane);
                 contai.validate();
@@ -163,6 +163,21 @@ public class GUIMain extends JFrame {
             }
             if (((JMenuItem) e.getSource()).getName().equals("miareaperiodo")) {
                 System.out.println("Si llega!");
+                jtpane.removeAll();
+                //MainCliente mc = new MainCliente();
+                MainVenta mc = ctx.getBean(MainVenta.class);
+                mc.setContexto(ctx);
+                mc.setPreferredSize(new Dimension(1024, 600));
+                scrollPane = new JScrollPane(mc);
+                scrollPane.setHorizontalScrollBarPolicy(
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                scrollPane.setVerticalScrollBarPolicy(
+                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                jtpane.add(scrollPane, "Ventas");
+                contai.add(BorderLayout.CENTER, jtpane);
+                contai.validate();
+                contai.repaint();
+
             }
             if (((JMenuItem) e.getSource()).getName().equals("mimiselectall")) {
                 jtpane.removeAll();//remueve todo el contenido
