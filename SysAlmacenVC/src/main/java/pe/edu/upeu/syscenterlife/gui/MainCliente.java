@@ -4,9 +4,12 @@
  */
 package pe.edu.upeu.syscenterlife.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -16,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import pe.edu.upeu.syscenterlife.modelo.Cliente;
+import pe.edu.upeu.syscenterlife.modelo.ComboBoxOption;
 import pe.edu.upeu.syscenterlife.servicio.ClienteService;
+import pe.edu.upeu.syscenterlife.servicio.MarcaService;
+import pe.edu.upeu.syscenterlife.servicio.ProductoService;
 
 @Component
 public class MainCliente extends javax.swing.JPanel {
@@ -26,6 +32,12 @@ public class MainCliente extends javax.swing.JPanel {
     @Autowired
     ClienteService clienteService;
     TableRowSorter<TableModel> trsfiltro;
+    @Autowired
+    MarcaService marcaService;
+
+    @Autowired
+    ProductoService productoService;
+    private DefaultListModel<String> listModel;
 
     enum TIPOCLXIENTE {
         Natural, General, Juridico
@@ -36,14 +48,40 @@ public class MainCliente extends javax.swing.JPanel {
         for (TIPOCLXIENTE myVar : TIPOCLXIENTE.values()) {
             cbxTipo.addItem(myVar.toString());
         }
-        
+        listModel = new DefaultListModel<>();
+        combox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Integer idM = Integer.parseInt(((ComboBoxOption) combox.getSelectedItem()).getKey() == null ? "0" : ((ComboBoxOption) combox.getSelectedItem()
+                    ).getKey()
+                    );
+ System.out.println(idM);
+
+                    cbxProducto.removeAllItems();
+                    listModel.clear();
+                    for (ComboBoxOption comboBoxOption : productoService.listaarcaCombobox(idM)) {
+                        cbxProducto.addItem(comboBoxOption);
+                        listModel.addElement(comboBoxOption.getValue());
+                    }
+                    jList1.setModel(listModel);
+                } catch (Exception ex) {
+                    System.out.println("Error - " + ex.getMessage());
+                }
+
+            }
+        });
+
     }
 
-    public void setContexto(ConfigurableApplicationContext ctx){
-        this.ctx=ctx;
+    public void setContexto(ConfigurableApplicationContext ctx) {
+        this.ctx = ctx;
         listarClientes();
+        combox.removeAllItems();
+        for (ComboBoxOption comboBoxOption : marcaService.listaarcaCombobox()) {
+            combox.addItem(comboBoxOption);
+        }
     }
-    
+
     public void listarClientes() {
         List<Cliente> listarCleintes = clienteService.listarEntidad();
         if (listarCleintes != null) {
@@ -114,6 +152,11 @@ public class MainCliente extends javax.swing.JPanel {
         txtNombre = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         cbxTipo = new javax.swing.JComboBox<>();
+        combox = new pe.com.syscenterlife.comboauto.ComboBoxSuggestion();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        cbxProducto = new pe.com.syscenterlife.comboauto.ComboBoxSuggestion();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -156,7 +199,7 @@ public class MainCliente extends javax.swing.JPanel {
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton5)))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(185, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -209,7 +252,7 @@ public class MainCliente extends javax.swing.JPanel {
                 .addComponent(btnRegistrar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnEliminar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -232,6 +275,8 @@ public class MainCliente extends javax.swing.JPanel {
 
         cbxTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione" }));
 
+        jScrollPane2.setViewportView(jList1);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -248,10 +293,15 @@ public class MainCliente extends javax.swing.JPanel {
                             .addComponent(jLabel3)
                             .addComponent(jLabel4))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbxTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cbxTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(combox, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbxProducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                .addContainerGap(110, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -268,7 +318,15 @@ public class MainCliente extends javax.swing.JPanel {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(cbxTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(214, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(combox, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(cbxProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 204));
@@ -306,7 +364,7 @@ public class MainCliente extends javax.swing.JPanel {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -446,20 +504,25 @@ public class MainCliente extends javax.swing.JPanel {
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JButton btnRegistrar;
+    private pe.com.syscenterlife.comboauto.ComboBoxSuggestion cbxProducto;
     private javax.swing.JComboBox<String> cbxTipo;
+    private pe.com.syscenterlife.comboauto.ComboBoxSuggestion combox;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField txtDatoBuscar;
     private javax.swing.JTextField txtDniruc;

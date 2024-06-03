@@ -4,21 +4,21 @@
  */
 package pe.edu.upeu.syscenterlife.servicio;
 
-import static java.lang.Math.log;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.logging.Level;
 import pe.com.syscenterlife.autocomp.ModeloDataAutocomplet;
+import pe.edu.upeu.syscenterlife.modelo.ComboBoxOption;
 import pe.edu.upeu.syscenterlife.modelo.Producto;
 import pe.edu.upeu.syscenterlife.repositorio.ProductoRepository;
 import pe.edu.upeu.syscenterlife.util.ErrorLogger;
 
 @Service
 public class ProductoService {
-    ErrorLogger log=new ErrorLogger("ProductoService.class");
 
+    ErrorLogger log = new ErrorLogger("ProductoService.class");
 
     @Autowired
     ProductoRepository productoRepository;
@@ -63,6 +63,16 @@ public class ProductoService {
             log.log(Level.SEVERE, "Error al realizar la busqueda", e);
         }
         return listarProducto;
+    }
+
+    public List<ComboBoxOption> listaarcaCombobox(Integer id) {
+        List<ComboBoxOption> Listar = new ArrayList<>();
+        for (Producto marca : productoRepository.listProductoMarca(id)) {
+            Listar.add(new ComboBoxOption(String.valueOf(marca.getIdProducto()),
+                    marca.getNombre()));
+        }
+
+        return Listar;
     }
 
 }
